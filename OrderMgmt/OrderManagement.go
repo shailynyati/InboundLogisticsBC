@@ -227,7 +227,7 @@ func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 				po.SubOrder_Id = row.Columns[5].GetString_()
 				po.Order_Status = row.Columns[6].GetString_()
 				po.Asset_ID = row.Columns[7].GetString_()
-	fmt.Println("=====================> OPOis ===" +po.Asset_ID+"Order desc==="+po.Order_Desc+"Order SubOrderId"+po.SubOrder_Id)
+				fmt.Println("=====================> OPOis ===" + po.Asset_ID + "Order desc===" + po.Order_Desc + "Order SubOrderId" + po.SubOrder_Id)
 				orderArray = append(orderArray, po)
 			}
 
@@ -236,8 +236,6 @@ func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 			break
 		}
 	}
-
-	fmt.Println("=====================> Order Araay is ===" +)
 
 	jsonRows, err := json.Marshal(orderArray)
 	if err != nil {
