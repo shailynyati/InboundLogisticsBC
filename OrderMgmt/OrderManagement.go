@@ -7,6 +7,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"strconv"
 )
+
 type SimpleChaincode struct {
 }
 
@@ -31,8 +32,7 @@ type PO_OEM struct {
 	Asset_ID       string `json:"asset_ID"`
 }
 
-func main()
- {
+func main() {
 
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
