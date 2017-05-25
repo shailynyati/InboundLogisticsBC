@@ -208,7 +208,7 @@ func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	var columns []shim.Column
 	rowChannel, err := stub.GetRows("PurchaseOrder", columns)
 
-	orderArray := []PO_tier1{}
+	orderArray := []*PO_tier1{}
 
 	for {
 		select {
@@ -218,7 +218,8 @@ func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 			if !ok {
 				rowChannel = nil
 			} else {
-				po := {}PO_tier1
+				po := new(PO_tier1)
+
 				po.Order_Id = row.Columns[0].GetString_()
 				po.Order_Desc = row.Columns[1].GetString_()
 				po.Order_Quantity = row.Columns[2].GetString_()
