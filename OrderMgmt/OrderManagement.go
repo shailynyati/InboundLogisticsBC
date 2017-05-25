@@ -237,6 +237,8 @@ func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 		}
 	}
 
+	fmt.Println("=====================> Order Araay is ===" + orderArray)
+
 	jsonRows, err := json.Marshal(orderArray)
 	if err != nil {
 		return nil, fmt.Errorf("getRowsTableFour operation failed. Error marshaling JSON: %s", err)
