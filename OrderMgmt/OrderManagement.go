@@ -159,10 +159,6 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	byteSubOrderId, err := stub.GetState("current_SubOrder_Id")
 	intSubOrderId, _ := strconv.Atoi(string(byteSubOrderId))
 
-	currentSubId := intSubOrderId + 1
-	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
-	stub.PutState("current_SubOrder_Id", []byte(strSubCurrentId))
-
 	col1Val := strCurrentId
 	col2Val := args[0]
 	col3Val := args[1]
@@ -204,6 +200,12 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	if !ok {
 		return []byte("Row with given key" + args[0] + " already exists"), errors.New("insertTableOne operation failed. Row with given key already exists")
 	}
+
+	currentSubId := intSubOrderId + 1
+	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
+	stub.PutState("current_SubOrder_Id", []byte(strSubCurrentId))
+
+	stub.PutState("2", []byte("Test Shaily"))
 	return nil, errors.New("Received unknown function invocation: ")
 }
 
@@ -213,17 +215,20 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	//all  id with overall status(irrespective of the role)
 	var columns []shim.Column
 	col1Val := args[0]
-
+	byteOrderId, err := stub.GetState("2")
+	fmt.Println("Current ID ====" + string(byteOrderId))
 	col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
 	columns = append(columns, col1)
 	fmt.Println("Befor get Rows")
 	row, err := stub.GetRow("PurchaseOrder", columns)
 	if err != nil {
+		fmt.Println("hi")
 		return nil, fmt.Errorf("Failed to retrieve row")
 	}
 	//orderArrary := []*PO_tier1{}
-	po := PO_tier1{}
+	var po = PO_tier1{}
 	if len(row.Columns) < 1 {
+		fmt.Println("hello")
 		return []byte("no row found with id:" + args[0]), fmt.Errorf("Failed to retrieve row")
 	}
 	//for row := range rows {
