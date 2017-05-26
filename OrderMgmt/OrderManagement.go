@@ -147,8 +147,8 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	fmt.Println("In create order")
 	//OrderId
 	byteOrderId, err := stub.GetState("current_Order_Id")
-	strOrderId := string(byteOrderId)
-	intOrderId, _ := strconv.Atoi(strOrderId)
+	fmt.Println("Current ID ====" + string(byteOrderId))
+	intOrderId, _ := strconv.Atoi(string(byteOrderId))
 
 	currentId := intOrderId + 1
 	strCurrentId := "PO" + strconv.Itoa(currentId)
@@ -156,8 +156,7 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 
 	//Sub orderId
 	byteSubOrderId, err := stub.GetState("current_SubOrder_Id")
-	strSubOrderId := string(byteSubOrderId)
-	intSubOrderId, _ := strconv.Atoi(strSubOrderId)
+	intSubOrderId, _ := strconv.Atoi(string(byteSubOrderId))
 
 	currentSubId := intSubOrderId + 1
 	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
@@ -181,6 +180,8 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	col6 := shim.Column{Value: &shim.Column_String_{String_: col6Val}}
 	col7 := shim.Column{Value: &shim.Column_String_{String_: col7Val}}
 	col8 := shim.Column{Value: &shim.Column_String_{String_: col8Val}}
+
+	fmt.Println("Value of Columns ====" + col1Val + ", " + col2Val + " ," + col3Val + "," + col4Val + "," + col5Val + "," + col6Val + "," + col7Val + "," + col8Val)
 
 	columns = append(columns, &col1)
 	columns = append(columns, &col2)
@@ -222,6 +223,7 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	var po PO_tier1
 
 	for row := range rows {
+		fmt.Println("In For rows")
 		//po = new(PO_tier1)
 		po.Order_Id = row.Columns[0].GetString_()
 		fmt.Println("PO ID====" + row.Columns[0].GetString_())
