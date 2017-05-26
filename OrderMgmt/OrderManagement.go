@@ -217,6 +217,8 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	}
 
 	orderArrary := []*PO_tier1{}
+	fmt.Println("PO ID====" + row.Columns[0].GetString_())
+	fmt.Println("PO SUBID====" + row.Columns[5].GetString_())
 
 	for row := range rows {
 		po := new(PO_tier1)
@@ -233,7 +235,7 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	}
 
 	jsonRows, _ := json.Marshal(orderArrary)
-	fmt.Println(string(jsonRows))
+	fmt.Println("Printing rows==========================" + string(jsonRows))
 	return jsonRows, nil
 
 }
