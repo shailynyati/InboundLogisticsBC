@@ -123,7 +123,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	if function == "createOrder" {
 		fmt.Println("IN invoke functions ==========")
 
-		return createOrder(stub, args)
+		return t.createOrder(stub, args)
 	}
 	if function == "updateOrderStatus" {
 
@@ -137,13 +137,13 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	if function == "fetchAllOrders" {
 		fmt.Println("IN OUERY ==========================")
 
-		return fetchAllOrders(stub, args)
+		return t.fetchAllOrders(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation: " + function)
 }
 
-func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("In create order")
 	//OrderId
 	byteOrderId, err := stub.GetState("current_Order_Id")
@@ -205,76 +205,41 @@ func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 	return nil, errors.New("Received unknown function invocation: ")
 }
 
-func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	fmt.Println("IN FETCH ALL ORDERS============================")
+	//all  id with overall status(irrespective of the role)
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
+	}
+
 	var columns []shim.Column
-	//rowChannel, err := stub.GetRows("PurchaseOrder", columns)
 
-	row, err := stub.GetRow("PurchaseOrder", columns)
+	rows, err := stub.GetRows("PurchaseOrder", columns)
 	if err != nil {
-		jsonResp := ""
-		return nil, errors.New(jsonResp)
+		return nil, fmt.Errorf("Failed to retrieve row")
 	}
 
-	// GetRows returns empty message if key does not exist
-	if len(row.Columns) == 0 {
-		jsonResp := ""
-		return nil, errors.New(jsonResp)
+	orderArrary := []*PO_tier1{}
+
+	for row := range rows {
+		po := new(PO_tier1)
+		po.Order_Id = row.Columns[0].GetString_()
+		po.Order_Desc = row.Columns[1].GetString_()
+		po.Order_Quantity = row.Columns[2].GetString_()
+		po.Assigned_To_Id = row.Columns[3].GetString_()
+		po.Created_By_Id = row.Columns[4].GetString_()
+		po.SubOrder_Id = row.Columns[5].GetString_()
+		po.Order_Status = row.Columns[6].GetString_()
+		po.Asset_ID = row.Columns[7].GetString_()
+
+		orderArrary = append(orderArrary, po)
 	}
 
-	po := PO_tier1{}
-	po.Order_Id = row.Columns[0].GetString_()
-	po.Order_Desc = row.Columns[1].GetString_()
-	po.Order_Quantity = row.Columns[2].GetString_()
-	po.Assigned_To_Id = row.Columns[3].GetString_()
-	po.Created_By_Id = row.Columns[4].GetString_()
-	po.SubOrder_Id = row.Columns[5].GetString_()
-	po.Order_Status = row.Columns[6].GetString_()
-	po.Asset_ID = row.Columns[7].GetString_()
+	jsonRows, _ := json.Marshal(orderArrary)
+	fmt.Println(string(jsonRows))
+	return jsonRows, nil
 
-	mapB, _ := json.Marshal(po)
-	fmt.Println(string(mapB))
-
-	//fmt.Println("=====================> PO is ===" + po.Asset_ID + "Order desc===" + po.Order_Desc + "Order SubOrderId" + po.SubOrder_Id)
-
-	//orderArray := []*PO_tier1{}
-
-	//	for {
-	//		select {
-	//
-	//		case row, ok := <-rowChannel:
-	//
-	//			if !ok {
-	//				rowChannel = nil
-	//			} else {
-	//				po := new(PO_tier1)
-	//
-	//				po.Order_Id = row.Columns[0].GetString_()
-	//				po.Order_Desc = row.Columns[1].GetString_()
-	//				po.Order_Quantity = row.Columns[2].GetString_()
-	//				po.Assigned_To_Id = row.Columns[3].GetString_()
-	//				po.Created_By_Id = row.Columns[4].GetString_()
-	//				po.SubOrder_Id = row.Columns[5].GetString_()
-	//				po.Order_Status = row.Columns[6].GetString_()
-	//				po.Asset_ID = row.Columns[7].GetString_()
-	//				fmt.Println("=====================> OPOis ===" + po.Asset_ID + "Order desc===" + po.Order_Desc + "Order SubOrderId" + po.SubOrder_Id)
-	//				orderArray = append(orderArray, po)
-	//			}
-	//
-	//		}
-	//		if rowChannel == nil {
-	//			break
-	//		}
-	//	}
-
-	//	jsonRows, err := json.Marshal(orderArray)
-	//	fmt.Println("Rows are ===========" + jsonRows)
-	//	if err != nil {
-	//		return nil, fmt.Errorf("getRowsTableFour operation failed. Error marshaling JSON: %s", err)
-	//	}
-
-	return nil, nil
 }
 
 func updateOrderStatus(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
