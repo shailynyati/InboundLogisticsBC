@@ -150,8 +150,6 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	fmt.Println("Current ID ====" + string(byteOrderId))
 	intOrderId, _ := strconv.Atoi(string(byteOrderId))
 
-	fmt.Println("int Order ID ID ====" + intOrderId)
-
 	currentId := intOrderId + 1
 
 	strCurrentId := "PO" + strconv.Itoa(currentId)
