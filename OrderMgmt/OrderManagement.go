@@ -222,8 +222,10 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 		return nil, fmt.Errorf("Failed to retrieve row")
 	}
 	//orderArrary := []*PO_tier1{}
-	var po PO_tier1
-
+	po := PO_tier1{}
+	if len(row.Columns) < 1 {
+		return []byte("no row found with id:" + args[0]), fmt.Errorf("Failed to retrieve row")
+	}
 	//for row := range rows {
 	//po = new(PO_tier1)
 	po.Order_Id = row.Columns[0].GetString_()
