@@ -91,7 +91,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	columnFour := shim.ColumnDefinition{Name: "Assigned_To_Id",
 		Type: shim.ColumnDefinition_STRING, Key: false}
 	columnFive := shim.ColumnDefinition{Name: "Created_By_Id",
-		Type: shim.ColumnDefinition_STRING, Key: true}
+		Type: shim.ColumnDefinition_STRING, Key: false}
 	columnSix := shim.ColumnDefinition{Name: "SubOrder_Id",
 		Type: shim.ColumnDefinition_STRING, Key: true}
 	columnSeven := shim.ColumnDefinition{Name: "Order_Status",
@@ -191,6 +191,7 @@ func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 
 	row := shim.Row{Columns: columns}
 	ok, err := stub.InsertRow("PurchaseOrder", row)
+	fmt.Println("In creat order ===========>" + ok)
 
 	if err != nil {
 		return nil, fmt.Errorf("insertTableOne operation failed. %s", err)
@@ -207,6 +208,7 @@ func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 
 	var columns []shim.Column
 	rowChannel, err := stub.GetRows("PurchaseOrder", columns)
+	fmt.Print("Columns are -------------" + columns)
 
 	orderArray := []*PO_tier1{}
 
