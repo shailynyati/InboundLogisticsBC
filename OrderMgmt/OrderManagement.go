@@ -219,9 +219,10 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	//orderArrary := []*PO_tier1{}
 	fmt.Println("PO ID====")
 	fmt.Println("PO SUBID====")
+	var po PO_tier1
 
 	for row := range rows {
-		po := new(PO_tier1)
+		//po = new(PO_tier1)
 		po.Order_Id = row.Columns[0].GetString_()
 		fmt.Println("PO ID====" + row.Columns[0].GetString_())
 		po.Order_Desc = row.Columns[1].GetString_()
