@@ -191,7 +191,6 @@ func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 
 	row := shim.Row{Columns: columns}
 	ok, err := stub.InsertRow("PurchaseOrder", row)
-	fmt.Println("In creat order ===========>" + ok)
 
 	if err != nil {
 		return nil, fmt.Errorf("insertTableOne operation failed. %s", err)
@@ -207,46 +206,72 @@ func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var columns []shim.Column
-	rowChannel, err := stub.GetRows("PurchaseOrder", columns)
-	fmt.Print("Columns are -------------" + columns)
+	//rowChannel, err := stub.GetRows("PurchaseOrder", columns)
 
-	orderArray := []*PO_tier1{}
-
-	for {
-		select {
-
-		case row, ok := <-rowChannel:
-
-			if !ok {
-				rowChannel = nil
-			} else {
-				po := new(PO_tier1)
-
-				po.Order_Id = row.Columns[0].GetString_()
-				po.Order_Desc = row.Columns[1].GetString_()
-				po.Order_Quantity = row.Columns[2].GetString_()
-				po.Assigned_To_Id = row.Columns[3].GetString_()
-				po.Created_By_Id = row.Columns[4].GetString_()
-				po.SubOrder_Id = row.Columns[5].GetString_()
-				po.Order_Status = row.Columns[6].GetString_()
-				po.Asset_ID = row.Columns[7].GetString_()
-				fmt.Println("=====================> OPOis ===" + po.Asset_ID + "Order desc===" + po.Order_Desc + "Order SubOrderId" + po.SubOrder_Id)
-				orderArray = append(orderArray, po)
-			}
-
-		}
-		if rowChannel == nil {
-			break
-		}
-	}
-
-	jsonRows, err := json.Marshal(orderArray)
+	row, err := stub.GetRow("PurchaseOrder", columns)
 	if err != nil {
-		return nil, fmt.Errorf("getRowsTableFour operation failed. Error marshaling JSON: %s", err)
+		jsonResp := ""
+		return nil, errors.New(jsonResp)
 	}
 
-	return jsonRows, nil
+	// GetRows returns empty message if key does not exist
+	if len(row.Columns) == 0 {
+		jsonResp := ""
+		return nil, errors.New(jsonResp)
+	}
 
+	po := PO_tier1{}
+	po.Order_Id = row.Columns[0].GetString_()
+	po.Order_Desc = row.Columns[1].GetString_()
+	po.Order_Quantity = row.Columns[2].GetString_()
+	po.Assigned_To_Id = row.Columns[3].GetString_()
+	po.Created_By_Id = row.Columns[4].GetString_()
+	po.SubOrder_Id = row.Columns[5].GetString_()
+	po.Order_Status = row.Columns[6].GetString_()
+	po.Asset_ID = row.Columns[7].GetString_()
+
+	mapB, _ := json.Marshal(po)
+	fmt.Println(string(mapB))
+
+	//fmt.Println("=====================> PO is ===" + po.Asset_ID + "Order desc===" + po.Order_Desc + "Order SubOrderId" + po.SubOrder_Id)
+
+	//orderArray := []*PO_tier1{}
+
+	//	for {
+	//		select {
+	//
+	//		case row, ok := <-rowChannel:
+	//
+	//			if !ok {
+	//				rowChannel = nil
+	//			} else {
+	//				po := new(PO_tier1)
+	//
+	//				po.Order_Id = row.Columns[0].GetString_()
+	//				po.Order_Desc = row.Columns[1].GetString_()
+	//				po.Order_Quantity = row.Columns[2].GetString_()
+	//				po.Assigned_To_Id = row.Columns[3].GetString_()
+	//				po.Created_By_Id = row.Columns[4].GetString_()
+	//				po.SubOrder_Id = row.Columns[5].GetString_()
+	//				po.Order_Status = row.Columns[6].GetString_()
+	//				po.Asset_ID = row.Columns[7].GetString_()
+	//				fmt.Println("=====================> OPOis ===" + po.Asset_ID + "Order desc===" + po.Order_Desc + "Order SubOrderId" + po.SubOrder_Id)
+	//				orderArray = append(orderArray, po)
+	//			}
+	//
+	//		}
+	//		if rowChannel == nil {
+	//			break
+	//		}
+	//	}
+
+	//	jsonRows, err := json.Marshal(orderArray)
+	//	fmt.Println("Rows are ===========" + jsonRows)
+	//	if err != nil {
+	//		return nil, fmt.Errorf("getRowsTableFour operation failed. Error marshaling JSON: %s", err)
+	//	}
+
+	return nil, nil
 }
 
 func updateOrderStatus(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
