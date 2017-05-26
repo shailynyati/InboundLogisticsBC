@@ -211,30 +211,32 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	//all  id with overall status(irrespective of the role)
 	var columns []shim.Column
 
+	fmt.Println("Befor get Rows")
 	rows, err := stub.GetRows("PurchaseOrder", columns)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to retrieve row")
 	}
-
-	orderArrary := []*PO_tier1{}
-	fmt.Println("PO ID====" + row.Columns[0].GetString_())
-	fmt.Println("PO SUBID====" + row.Columns[5].GetString_())
+	//orderArrary := []*PO_tier1{}
+	fmt.Println("PO ID====")
+	fmt.Println("PO SUBID====")
 
 	for row := range rows {
 		po := new(PO_tier1)
 		po.Order_Id = row.Columns[0].GetString_()
+		fmt.Println("PO ID====" + row.Columns[0].GetString_())
 		po.Order_Desc = row.Columns[1].GetString_()
 		po.Order_Quantity = row.Columns[2].GetString_()
 		po.Assigned_To_Id = row.Columns[3].GetString_()
 		po.Created_By_Id = row.Columns[4].GetString_()
 		po.SubOrder_Id = row.Columns[5].GetString_()
+		fmt.Println("PO SUBID====" + row.Columns[5].GetString_())
 		po.Order_Status = row.Columns[6].GetString_()
 		po.Asset_ID = row.Columns[7].GetString_()
 
-		orderArrary = append(orderArrary, po)
+		//		orderArrary = append(orderArrary, po)
 	}
 
-	jsonRows, _ := json.Marshal(orderArrary)
+	jsonRows, _ := json.Marshal(po)
 	fmt.Println("Printing rows==========================" + string(jsonRows))
 	return jsonRows, nil
 
