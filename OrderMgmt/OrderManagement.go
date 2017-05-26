@@ -93,7 +93,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	columnFive := shim.ColumnDefinition{Name: "Created_By_Id",
 		Type: shim.ColumnDefinition_STRING, Key: false}
 	columnSix := shim.ColumnDefinition{Name: "SubOrder_Id",
-		Type: shim.ColumnDefinition_STRING, Key: true}
+		Type: shim.ColumnDefinition_STRING, Key: false}
 	columnSeven := shim.ColumnDefinition{Name: "Order_Status",
 		Type: shim.ColumnDefinition_STRING, Key: false}
 	columnEight := shim.ColumnDefinition{Name: "Asset_ID",
