@@ -209,10 +209,6 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 
 	fmt.Println("IN FETCH ALL ORDERS============================")
 	//all  id with overall status(irrespective of the role)
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
-	}
-
 	var columns []shim.Column
 
 	rows, err := stub.GetRows("PurchaseOrder", columns)
