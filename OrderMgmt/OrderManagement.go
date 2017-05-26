@@ -135,7 +135,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if function == "fetchAllOrders" {
-		fmt.Println("IN FETCH ORDERS==========================")
+		fmt.Println("IN OUERY ==========================")
 
 		return fetchAllOrders(stub, args)
 	}
@@ -207,6 +207,7 @@ func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 
 func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
+	fmt.Println("IN FETCH ALL ORDERS============================")
 	var columns []shim.Column
 	//rowChannel, err := stub.GetRows("PurchaseOrder", columns)
 
