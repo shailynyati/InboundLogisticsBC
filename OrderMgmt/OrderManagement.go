@@ -172,7 +172,9 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	col7Val := args[4]
 	col8Val := args[5]
 
+	//var columns []*shim.Column
 	var columns []*shim.Column
+
 	col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
 	col2 := shim.Column{Value: &shim.Column_String_{String_: col2Val}}
 	col3 := shim.Column{Value: &shim.Column_String_{String_: col3Val}}
@@ -195,15 +197,15 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 
 	row := shim.Row{Columns: columns}
 	ok, err := stub.InsertRow("PurchaseOrder", row)
-
+	fmt.Println("After row Inserted")
 	if err != nil {
-		fmt.Println("Error inserting===========%s", err)
+		fmt.Println("Error inserting===========")
 		return nil, fmt.Errorf("insertTableOne operation failed. %s", err)
 		panic(err)
 
 	}
 	if !ok {
-		fmt.Println("If not ok ----Error inserting===========%s", err)
+		fmt.Println("Error inserting===========%s", err)
 		return []byte("Row with given key" + args[0] + " already exists"), errors.New("insertTableOne operation failed. Row with given key already exists")
 	}
 	return []byte("success"), errors.New("Received unknown function invocation: ")
