@@ -204,7 +204,7 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	if !ok {
 		return []byte("Row with given key" + args[0] + " already exists"), errors.New("insertTableOne operation failed. Row with given key already exists")
 	}
-	return nil, errors.New("Received unknown function invocation: ")
+	return []byte("success"), errors.New("Received unknown function invocation: ")
 }
 
 func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
