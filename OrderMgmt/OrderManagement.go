@@ -212,10 +212,10 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	fmt.Println("IN FETCH ALL ORDERS============================")
 	//all  id with overall status(irrespective of the role)
 	var columns []shim.Column
-	col1Val := args[0]
+	//col1Val := args[0]
 
-	col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
-	columns = append(columns, col1)
+	//col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
+	//columns = append(columns, col1)
 	fmt.Println("Befor get Rows")
 	row, err := stub.GetRow("PurchaseOrder", columns)
 	if err != nil {
