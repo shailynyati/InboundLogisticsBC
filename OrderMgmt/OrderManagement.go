@@ -197,6 +197,7 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	ok, err := stub.InsertRow("PurchaseOrder", row)
 
 	if err != nil {
+		fmt.Println("Error inserting===========" + err)
 		return nil, fmt.Errorf("insertTableOne operation failed. %s", err)
 		panic(err)
 
