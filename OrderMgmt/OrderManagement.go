@@ -87,7 +87,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	if err != nil {
 		return nil, errors.New("Failed creating PurchaseOrder Table.")
 	}
-
+	fmt.Println("IN inti table createed successfully %s", err)
 	return nil, nil
 
 }
