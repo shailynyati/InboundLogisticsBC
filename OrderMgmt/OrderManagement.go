@@ -75,19 +75,19 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	}
 
 	err = stub.CreateTable("PurchaseOrder", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name: "Order_Id", Type: shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "Order_Desc", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Order_Quantity", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Assigned_To_Id", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Created_By_Id", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "SubOrder_Id", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Order_Status", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Asset_ID", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Order_Id", shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "Order_Desc", shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Order_Quantity", shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Assigned_To_Id", shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Created_By_Id", shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "SubOrder_Id", shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Order_Status", shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Asset_ID", shim.ColumnDefinition_STRING, Key: false},
 	})
 	if err != nil {
 		return nil, errors.New("Failed creating PurchaseOrder Table.")
 	}
-	fmt.Println("IN inti table createed successfully %s", err)
+	fmt.Println("IN init table created successfully %s", err)
 	return nil, nil
 
 }
