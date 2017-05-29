@@ -74,44 +74,19 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 		return nil, fmt.Errorf("remove operation failed. Error updating state: %s", err)
 	}
 
-	stub.PutState("role_OEM", []byte("OEM"))
-	stub.PutState("role_tier_1", []byte("tier_1"))
-	stub.PutState("role_first_tier_2", []byte("first_tier_2"))
-	stub.PutState("role_second_tier_2", []byte("second_tier_2"))
-
-	var columnsOrderTable []*shim.ColumnDefinition
-
-	columnOne := shim.ColumnDefinition{Name: "Order_Id",
-		Type: shim.ColumnDefinition_STRING, Key: true}
-	columnTwo := shim.ColumnDefinition{Name: "Order_Desc",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-	columnThree := shim.ColumnDefinition{Name: "Order_Quantity",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-	columnFour := shim.ColumnDefinition{Name: "Assigned_To_Id",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-	columnFive := shim.ColumnDefinition{Name: "Created_By_Id",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-	columnSix := shim.ColumnDefinition{Name: "SubOrder_Id",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-	columnSeven := shim.ColumnDefinition{Name: "Order_Status",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-	columnEight := shim.ColumnDefinition{Name: "Asset_ID",
-		Type: shim.ColumnDefinition_STRING, Key: false}
-
-	columnsOrderTable = append(columnsOrderTable, &columnOne)
-	columnsOrderTable = append(columnsOrderTable, &columnTwo)
-	columnsOrderTable = append(columnsOrderTable, &columnThree)
-	columnsOrderTable = append(columnsOrderTable, &columnFour)
-	columnsOrderTable = append(columnsOrderTable, &columnFive)
-	columnsOrderTable = append(columnsOrderTable, &columnSix)
-	columnsOrderTable = append(columnsOrderTable, &columnSeven)
-	columnsOrderTable = append(columnsOrderTable, &columnEight)
-
-	stub.CreateTable("PurchaseOrder", columnsOrderTable)
-
-	//	orderId := "1000"
-	//	stub.PutState("current_Order_Id", []byte(orderId))
-	//	stub.PutState("current_SubOrder_Id", []byte(orderId))
+	err = stub.CreateTable("PurchaseOrder", []*shim.ColumnDefinition{
+		&shim.ColumnDefinition{Name: "Order_Id", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "Order_Desc", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Order_Quantity", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Assigned_To_Id", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Created_By_Id", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "SubOrder_Id", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Order_Status", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Asset_ID", Type: shim.ColumnDefinition_STRING, Key: false},
+	})
+	if err != nil {
+		return nil, errors.New("Failed creating PurchaseOrder Table.")
+	}
 
 	return nil, nil
 
@@ -144,23 +119,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 
 func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("In create order")
-	//OrderId
-	//	byteOrderId, err := stub.GetState("current_Order_Id")
-	//	fmt.Println("Current ID ====" + string(byteOrderId))
-	//	intOrderId, _ := strconv.Atoi(string(byteOrderId))
-	//
-	//	currentId := intOrderId + 1
-	//
-	//	strCurrentId := "PO" + strconv.Itoa(currentId)
-	//	stub.PutState("current_Order_Id", []byte(strCurrentId))
-	//
-	//	//Sub orderId
-	//	byteSubOrderId, err := stub.GetState("current_SubOrder_Id")
-	//	intSubOrderId, _ := strconv.Atoi(string(byteSubOrderId))
-	//
-	//	currentSubId := intSubOrderId + 1
-	//	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
-	//	stub.PutState("current_SubOrder_Id", []byte(strSubCurrentId))
 
 	col1Val := args[0]
 	col2Val := args[1]
@@ -171,41 +129,26 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	col7Val := args[6]
 	col8Val := args[7]
 
-	//var columns []*shim.Column
-	var columns []*shim.Column
+	ok, err := stub.InsertRow("Quote", shim.Row{
+		Columns: []*shim.Column{
+			&shim.Column{Value: &shim.Column_String_{String_: col1Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col2Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col3Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col4Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col5Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col6Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col7Val}},
+			&shim.Column{Value: &shim.Column_String_{String_: col8Val}},
+		}})
 
-	col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
-	col2 := shim.Column{Value: &shim.Column_String_{String_: col2Val}}
-	col3 := shim.Column{Value: &shim.Column_String_{String_: col3Val}}
-	col4 := shim.Column{Value: &shim.Column_String_{String_: col4Val}}
-	col5 := shim.Column{Value: &shim.Column_String_{String_: col5Val}}
-	col6 := shim.Column{Value: &shim.Column_String_{String_: col6Val}}
-	col7 := shim.Column{Value: &shim.Column_String_{String_: col7Val}}
-	col8 := shim.Column{Value: &shim.Column_String_{String_: col8Val}}
-
-	fmt.Println("Value of Columns ====" + col1Val + ", " + col2Val + " ," + col3Val + "," + col4Val + "," + col5Val + "," + col6Val + "," + col7Val + "," + col8Val)
-
-	columns = append(columns, &col1)
-	columns = append(columns, &col2)
-	columns = append(columns, &col3)
-	columns = append(columns, &col4)
-	columns = append(columns, &col5)
-	columns = append(columns, &col6)
-	columns = append(columns, &col7)
-	columns = append(columns, &col8)
-
-	row := shim.Row{Columns: columns}
-	ok, err := stub.InsertRow("PurchaseOrder", row)
-	fmt.Println("After row Inserted==========%s", ok)
 	if err != nil {
-		return nil, fmt.Errorf("insertTableOne operation failed. %s", err)
-		panic(err)
-
+		return nil, err
 	}
-	if !ok {
-		fmt.Println("Error inserting in ok ===========%s", err)
-		return []byte("Row with given key" + args[0] + " already exists"), errors.New("insertTableOne operation failed. Row with given key already exists")
+	if !ok && err == nil {
+		return nil, errors.New("Row already exists.")
 	}
+	fmt.Println("Value of Columns ====" + col1Val + ", " + col2Val + " ," + col3Val + "," + col4Val + "," + col5Val + "," + col6Val + "," + col7Val + "," + col8Val)
+	fmt.Println("After row Inserted==========%s", ok)
 	return []byte("success"), errors.New("Received unknown function invocation: ")
 }
 
@@ -215,7 +158,6 @@ func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args 
 	//all  id with overall status(irrespective of the role)
 	var columns []shim.Column
 	col1Val := args[0]
-
 	col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
 	columns = append(columns, col1)
 	fmt.Println("Befor get Rows")
