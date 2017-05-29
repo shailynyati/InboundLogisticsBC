@@ -109,9 +109,9 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 
 	stub.CreateTable("PurchaseOrder", columnsOrderTable)
 
-	orderId := "1000"
-	stub.PutState("current_Order_Id", []byte(orderId))
-	stub.PutState("current_SubOrder_Id", []byte(orderId))
+	//	orderId := "1000"
+	//	stub.PutState("current_Order_Id", []byte(orderId))
+	//	stub.PutState("current_SubOrder_Id", []byte(orderId))
 
 	return nil, nil
 
