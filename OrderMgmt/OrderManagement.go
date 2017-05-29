@@ -5,30 +5,20 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"strconv"
 )
 
+type PO struct {
+	Order_Id       string `json:"order_Id"`
+	Order_Desc     string `json:"order_desc"`
+	Order_Quantity string `json:"order_quantity"`
+	Assigned_To_Id string `json:"assigned_to_id"`
+	Created_By_Id  string `json:"created_by_id"`
+	Order_Status   string `json:"order_status"`
+	Asset_ID       string `json:"asset_ID"`
+}
+
 type SimpleChaincode struct {
-}
-
-type PO_tier1 struct {
-	Order_Id       string `json:"order_Id"`
-	Order_Desc     string `json:"order_desc"`
-	Order_Quantity string `json:"order_quantity"`
-	Assigned_To_Id string `json:"assigned_to_id"`
-	Created_By_Id  string `json:"created_by_id"`
-	SubOrder_Id    string `json:"subOrder_Id"`
-	Order_Status   string `json:"order_status"`
-	Asset_ID       string `json:"asset_ID"`
-}
-
-type PO_OEM struct {
-	Order_Id       string `json:"order_Id"`
-	Order_Desc     string `json:"order_desc"`
-	Order_Quantity string `json:"order_quantity"`
-	Assigned_To_Id string `json:"assigned_to_id"`
-	Created_By_Id  string `json:"created_by_id"`
-	Order_Status   string `json:"order_status"`
-	Asset_ID       string `json:"asset_ID"`
 }
 
 func main() {
@@ -40,54 +30,57 @@ func main() {
 	}
 }
 
-func (t *SimpleChaincode) convert(row shim.Row) PO_tier1 {
-	var po = PO_tier1{}
+func (t *SimpleChaincode) convert(row shim.Row) PO {
+	var po = PO{}
 
 	po.Order_Id = row.Columns[0].GetString_()
 	po.Order_Desc = row.Columns[1].GetString_()
 	po.Order_Quantity = row.Columns[2].GetString_()
 	po.Assigned_To_Id = row.Columns[3].GetString_()
 	po.Created_By_Id = row.Columns[4].GetString_()
-	po.SubOrder_Id = row.Columns[5].GetString_()
-	po.Order_Status = row.Columns[6].GetString_()
-	po.Asset_ID = row.Columns[7].GetString_()
+	po.Order_Status = row.Columns[5].GetString_()
+	po.Asset_ID = row.Columns[6].GetString_()
+
 	return po
 }
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+
 	var err error
-	err = stub.DelState("role_OEM")
+
+	err = stub.CreateTable("OEM", []*shim.ColumnDefinition{
+		&shim.ColumnDefinition{"OrderId", shim.ColumnDefinition_STRING, true},
+		&shim.ColumnDefinition{"Order_Desc", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Order_Quantity", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Assigned_To_Id", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Created_By_Id", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Order_Status", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Asset_ID", shim.ColumnDefinition_STRING, false}})
+
 	if err != nil {
-		return nil, fmt.Errorf("remove operation failed. Error updating state: %s", err)
+		return nil, errors.New("OEM table not created")
 	}
 
-	err = stub.DelState("role_tier_1")
+	err = stub.CreateTable("TIER1", []*shim.ColumnDefinition{
+		&shim.ColumnDefinition{"subOrderId", shim.ColumnDefinition_STRING, true},
+		&shim.ColumnDefinition{"OrderId", shim.ColumnDefinition_STRING, true},
+		&shim.ColumnDefinition{"Order_Desc", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Order_Quantity", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Assigned_To_Id", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Created_By_Id", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Order_Status", shim.ColumnDefinition_STRING, false},
+		&shim.ColumnDefinition{"Asset_ID", shim.ColumnDefinition_STRING, false}})
+
 	if err != nil {
-		return nil, fmt.Errorf("remove operation failed. Error updating state: %s", err)
-	}
-	err = stub.DelState("role_first_tier_2")
-	if err != nil {
-		return nil, fmt.Errorf("remove operation failed. Error updating state: %s", err)
-	}
-	err = stub.DelState("role_second_tier_2")
-	if err != nil {
-		return nil, fmt.Errorf("remove operation failed. Error updating state: %s", err)
+		return nil, errors.New("TIER1 table not created")
 	}
 
-	err = stub.CreateTable("PurchaseOrder", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name: "Order_Id", shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "Order_Desc", shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Order_Quantity", shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Assigned_To_Id", shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Created_By_Id", shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "SubOrder_Id", shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Order_Status", shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "Asset_ID", shim.ColumnDefinition_STRING, Key: false},
-	})
-	if err != nil {
-		return nil, errors.New("Failed creating PurchaseOrder Table.")
-	}
-	fmt.Println("IN init table created successfully %s", err)
+	orderId := "1000"
+	subOrderId := "12345"
+
+	stub.PutState("orderId", []byte(orderId))
+	stub.PutState("subOrderId", []byte(subOrderId))
+
 	return nil, nil
 
 }
@@ -95,106 +88,120 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if function == "createOrder" {
-		fmt.Println("IN invoke functions ==========")
 
-		return t.createOrder(stub, args)
+		return createOrder(stub, args)
 	}
-	if function == "updateOrderStatus" {
-
-		return updateOrderStatus(stub, args)
-	}
-	return nil, errors.New("Received unknown function invocation: " + function)
-
+	return nil, nil
 }
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if function == "fetchAllOrders" {
-		fmt.Println("IN OUERY ==========================")
 
-		return t.fetchAllOrders(stub, args)
+		return fetchAllOrders(stub, args)
 	}
+	return nil, nil
 
-	return nil, errors.New("Received unknown function invocation: " + function)
 }
 
-func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Println("In create order")
+func createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	col1Val := args[0]
-	col2Val := args[1]
-	col3Val := args[2]
-	col4Val := args[3]
-	col5Val := args[4]
-	col6Val := args[5]
-	col7Val := args[6]
-	col8Val := args[7]
+	//OrderId
+	byteOrderId, err := stub.GetState("orderId")
+	strOrderId := string(byteOrderId)
+	intOrderId, _ := strconv.Atoi(strOrderId)
 
-	ok, err := stub.InsertRow("PurchaseOrder", shim.Row{
-		Columns: []*shim.Column{
-			&shim.Column{Value: &shim.Column_String_{String_: col1Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col2Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col3Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col4Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col5Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col6Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col7Val}},
-			&shim.Column{Value: &shim.Column_String_{String_: col8Val}},
-		}})
+	currentId := intOrderId + 1
+	str := strconv.Itoa(currentId)
+	strCurrentId := "PO" + strconv.Itoa(currentId)
+	stub.PutState("orderId", []byte(str))
+
+	fmt.Println(strCurrentId)
+	fmt.Println(args[0])
+	fmt.Println(args[1])
+	fmt.Println(args[3])
+
+	col1Val := strCurrentId
+	col2Val := args[0]
+	col3Val := args[1]
+	col4Val := "Tier 1"
+	col5Val := "OEM"
+	col6Val := "Order created. Pending with Tier1"
+	col7Val := args[3]
+
+	var columns []*shim.Column
+
+	col0 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
+	col1 := shim.Column{Value: &shim.Column_String_{String_: col2Val}}
+	col2 := shim.Column{Value: &shim.Column_String_{String_: col3Val}}
+	col3 := shim.Column{Value: &shim.Column_String_{String_: col4Val}}
+	col4 := shim.Column{Value: &shim.Column_String_{String_: col5Val}}
+	col5 := shim.Column{Value: &shim.Column_String_{String_: col6Val}}
+	col6 := shim.Column{Value: &shim.Column_String_{String_: col7Val}}
+
+	columns = append(columns, &col0)
+	columns = append(columns, &col1)
+	columns = append(columns, &col2)
+	columns = append(columns, &col3)
+	columns = append(columns, &col4)
+	columns = append(columns, &col5)
+	columns = append(columns, &col6)
+
+	row := shim.Row{Columns: columns}
+	ok, err := stub.InsertRow("OEM", row)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("insertTableOne operation failed. %s", err)
+		panic(err)
+
 	}
-	if !ok && err == nil {
-		return nil, errors.New("Row already exists.")
+	if !ok {
+		return []byte("Row with given key" + args[0] + " already exists"), errors.New("insertTableOne operation failed. Row with given key already exists")
 	}
-	fmt.Println("Value of Columns ====" + col1Val + ", " + col2Val + " ," + col3Val + "," + col4Val + "," + col5Val + "," + col6Val + "," + col7Val + "," + col8Val)
-	fmt.Println("After row Inserted==========%s", ok)
-	return []byte("success"), errors.New("Received unknown function invocation: ")
+	return nil, nil
 }
 
-func (t *SimpleChaincode) fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func fetchAllOrders(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	fmt.Println("IN FETCH ALL ORDERS============================")
-	//all  id with overall status(irrespective of the role)
 	var columns []shim.Column
-	col1Val := args[0]
-	col1 := shim.Column{Value: &shim.Column_String_{String_: col1Val}}
-	columns = append(columns, col1)
-	fmt.Println("Befor get Rows")
-	row, err := stub.GetRow("PurchaseOrder", columns)
+	rowChannel, err := stub.GetRows("OEM", columns)
+
+	orderArray := []PO{}
+
+	for {
+		select {
+
+		case row, ok := <-rowChannel:
+
+			if !ok {
+				rowChannel = nil
+			} else {
+
+				fmt.Println("Inside Else of for loop in query")
+				po := PO{}
+
+				po.Order_Id = row.Columns[0].GetString_()
+				po.Order_Desc = row.Columns[1].GetString_()
+				po.Order_Quantity = row.Columns[2].GetString_()
+				po.Assigned_To_Id = row.Columns[3].GetString_()
+				po.Created_By_Id = row.Columns[4].GetString_()
+				po.Order_Status = row.Columns[5].GetString_()
+				po.Asset_ID = row.Columns[6].GetString_()
+
+				orderArray = append(orderArray, po)
+			}
+
+		}
+		if rowChannel == nil {
+			break
+		}
+	}
+
+	jsonRows, err := json.Marshal(orderArray)
+
 	if err != nil {
-		fmt.Println("hi")
-		return nil, fmt.Errorf("Failed to retrieve row")
+		return nil, fmt.Errorf("getRowsTableFour operation failed. Error marshaling JSON: %s", err)
 	}
-	//orderArrary := []*PO_tier1{}
-	var po = PO_tier1{}
-	if len(row.Columns) < 1 {
-		fmt.Println("hello")
-		return []byte("no row found with id:" + args[0]), fmt.Errorf("Failed to retrieve row")
-	}
-	//for row := range rows {
-	//po = new(PO_tier1)
-	po.Order_Id = row.Columns[0].GetString_()
-	fmt.Println("PO ID====" + row.Columns[0].GetString_())
-	po.Order_Desc = row.Columns[1].GetString_()
-	po.Order_Quantity = row.Columns[2].GetString_()
-	po.Assigned_To_Id = row.Columns[3].GetString_()
-	po.Created_By_Id = row.Columns[4].GetString_()
-	po.SubOrder_Id = row.Columns[5].GetString_()
-	fmt.Println("PO SUBID====" + row.Columns[5].GetString_())
-	po.Order_Status = row.Columns[6].GetString_()
-	po.Asset_ID = row.Columns[7].GetString_()
 
-	//		orderArrary = append(orderArrary, po)
-	//}
-
-	jsonRows, _ := json.Marshal(po)
-	fmt.Println("Printing rows==========================" + string(jsonRows))
 	return jsonRows, nil
 
-}
-
-func updateOrderStatus(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-
-	return nil, nil
 }
