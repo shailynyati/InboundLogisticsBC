@@ -146,31 +146,31 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("In create order")
 	//OrderId
-	byteOrderId, err := stub.GetState("current_Order_Id")
-	fmt.Println("Current ID ====" + string(byteOrderId))
-	intOrderId, _ := strconv.Atoi(string(byteOrderId))
+	//	byteOrderId, err := stub.GetState("current_Order_Id")
+	//	fmt.Println("Current ID ====" + string(byteOrderId))
+	//	intOrderId, _ := strconv.Atoi(string(byteOrderId))
+	//
+	//	currentId := intOrderId + 1
+	//
+	//	strCurrentId := "PO" + strconv.Itoa(currentId)
+	//	stub.PutState("current_Order_Id", []byte(strCurrentId))
+	//
+	//	//Sub orderId
+	//	byteSubOrderId, err := stub.GetState("current_SubOrder_Id")
+	//	intSubOrderId, _ := strconv.Atoi(string(byteSubOrderId))
+	//
+	//	currentSubId := intSubOrderId + 1
+	//	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
+	//	stub.PutState("current_SubOrder_Id", []byte(strSubCurrentId))
 
-	currentId := intOrderId + 1
-
-	strCurrentId := "PO" + strconv.Itoa(currentId)
-	stub.PutState("current_Order_Id", []byte(strCurrentId))
-
-	//Sub orderId
-	byteSubOrderId, err := stub.GetState("current_SubOrder_Id")
-	intSubOrderId, _ := strconv.Atoi(string(byteSubOrderId))
-
-	currentSubId := intSubOrderId + 1
-	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
-	stub.PutState("current_SubOrder_Id", []byte(strSubCurrentId))
-
-	col1Val := strCurrentId
-	col2Val := args[0]
-	col3Val := args[1]
-	col4Val := args[2]
-	col5Val := args[3]
-	col6Val := strSubCurrentId
-	col7Val := args[4]
-	col8Val := args[5]
+	col1Val := args[1]
+	col2Val := args[2]
+	col3Val := args[3]
+	col4Val := args[4]
+	col5Val := args[5]
+	col6Val := args[6]
+	col7Val := args[7]
+	col8Val := args[8]
 
 	//var columns []*shim.Column
 	var columns []*shim.Column
