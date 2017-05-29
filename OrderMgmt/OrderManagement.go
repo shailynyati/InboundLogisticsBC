@@ -129,7 +129,7 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	col7Val := args[6]
 	col8Val := args[7]
 
-	ok, err := stub.InsertRow("Quote", shim.Row{
+	ok, err := stub.InsertRow("PurchaseOrder", shim.Row{
 		Columns: []*shim.Column{
 			&shim.Column{Value: &shim.Column_String_{String_: col1Val}},
 			&shim.Column{Value: &shim.Column_String_{String_: col2Val}},
