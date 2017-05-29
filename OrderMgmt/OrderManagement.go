@@ -162,14 +162,14 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	//	strSubCurrentId := "PO" + strconv.Itoa(currentSubId)
 	//	stub.PutState("current_SubOrder_Id", []byte(strSubCurrentId))
 
-	col1Val := args[1]
-	col2Val := args[2]
-	col3Val := args[3]
-	col4Val := args[4]
-	col5Val := args[5]
-	col6Val := args[6]
-	col7Val := args[7]
-	col8Val := args[8]
+	col1Val := args[0]
+	col2Val := args[1]
+	col3Val := args[2]
+	col4Val := args[3]
+	col5Val := args[4]
+	col6Val := args[5]
+	col7Val := args[6]
+	col8Val := args[7]
 
 	//var columns []*shim.Column
 	var columns []*shim.Column
